@@ -1,0 +1,132 @@
+﻿@model IEnumerable<GYM_Manage.Models.LichTapThanhVien>
+
+@{
+    ViewData["Title"] = "Lịch tập VIP";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var thongBao = ViewBag.ThongBao as List<GYM_Manage.Models.ThongBao>;
+    var thongBaoMoi = ViewBag.ThongBaoMoi as int? ?? 0;
+
+    var top3ThongBao = thongBao?.Take(3).ToList() ?? new List<GYM_Manage.Models.ThongBao>();
+}
+
+<div class="container py-4">
+    <div class="row">
+
+        <!-- ============================= -->
+        <!--      BÊN TRÁI: LỊCH TẬP VIP  -->
+        <!-- ============================= -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-badge-fill me-2"></i> Lịch tập VIP của bạn
+                    </h5>
+                </div>
+
+                <div class="card-body">
+
+                    @if (!Model.Any())
+                    {
+                        <div class="alert alert-info">
+                            Bạn hiện chưa có lịch tập VIP nào.
+                        </div>
+                    }
+                    else
+                    {
+                        <table class="table table-bordered table-hover align-middle mt-2">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Ngày tập</th>
+                                    <th>Ca</th>
+                                    <th>Huấn luyện viên chính</th>
+                                    <th>H. Luyện viên thay thế</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@item.NgayTap.ToString("dd/MM/yyyy")</td>
+
+                                        <td>
+                                            <b>@item.CaLamViec?.TenCa</b><br />
+                                            <small class="text-muted">
+                                                @item.CaLamViec?.GioBatDau - @item.CaLamViec?.GioKetThuc
+                                            </small>
+                                        </td>
+
+                                        <td>@(item.HuanLuyenVien?.HoTen ?? "—")</td>
+                                        <td>@(item.HuanLuyenVienThayThe?.HoTen ?? "Không có")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================== -->
+        <!--    BÊN PHẢI: THÔNG BÁO MINI (A)    -->
+        <!-- ================================== -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 position-sticky" style="top: 90px;">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                        <i class="bi bi-bell-fill me-1"></i> Thông báo
+                    </h6>
+
+                    @if (thongBaoMoi > 0)
+                    {
+                        <span class="badge bg-warning text-dark">
+                            @thongBaoMoi mới
+                        </span>
+                    }
+                </div>
+
+                <div class="card-body">
+
+                    @if (top3ThongBao.Count == 0)
+                    {
+                        <p class="text-muted">Không có thông báo nào.</p>
+                    }
+                    else
+                    {
+                        foreach (var tb in top3ThongBao)
+                        {
+                            <div class="p-2 mb-2 rounded border
+                                 @(tb.DaDoc ? "bg-light" : "bg-warning bg-opacity-25 border-warning")">
+
+                                <div class="d-flex justify-content-between">
+                                    <strong>@tb.TieuDe</strong>
+
+                                    @if (!tb.DaDoc)
+                                    {
+                                        <span class="badge text-bg-danger">Mới</span>
+                                    }
+                                </div>
+
+                                <div class="text-muted small">
+                                    @tb.NoiDung
+                                </div>
+
+                                <small class="text-muted">
+                                    @tb.NgayGui.ToString("dd/MM/yyyy HH:mm")
+                                </small>
+                            </div>
+                        }
+                    }
+
+                    <div class="text-end mt-2">
+                        <a href="/ThongBao/Index" class="btn btn-sm btn-outline-primary">
+                            Xem tất cả
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

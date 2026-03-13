@@ -1,0 +1,80 @@
+﻿@model GYM_Manage.Models.CaLamViec
+
+@{
+    ViewData["Title"] = Model.MaCa == 0 ? "Thêm Ca làm việc" : "Chỉnh sửa Ca làm việc";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container-fluid">
+    <h4 class="mb-4 fw-bold text-primary">
+        <i class="bi bi-clock"></i> @ViewData["Title"]
+    </h4>
+
+    <div class="card shadow">
+        <div class="card-header py-3">
+            <h6 class="m-0 fw-bold text-dark">Thông tin Ca làm việc</h6>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-action="CreateOrEdit" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                @* Hidden ID khi sửa *@
+                @if (Model.MaCa > 0)
+                {
+                    <input type="hidden" asp-for="MaCa" />
+                }
+
+                <div class="row">
+                    <!-- Tên Ca -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="TenCa" class="form-label fw-semibold">Tên Ca</label>
+                        <input asp-for="TenCa" class="form-control" placeholder="Ví dụ: Ca sáng, Ca chiều..." required />
+                        <span asp-validation-for="TenCa" class="text-danger"></span>
+                    </div>
+
+                    <!-- Giờ bắt đầu -->
+                    <div class="col-md-3 mb-3">
+                        <label asp-for="GioBatDau" class="form-label fw-semibold">Giờ bắt đầu</label>
+                        <input asp-for="GioBatDau" type="time" class="form-control" required />
+                        <span asp-validation-for="GioBatDau" class="text-danger"></span>
+                    </div>
+
+                    <!-- Giờ kết thúc -->
+                    <div class="col-md-3 mb-3">
+                        <label asp-for="GioKetThuc" class="form-label fw-semibold">Giờ kết thúc</label>
+                        <input asp-for="GioKetThuc" type="time" class="form-control" required />
+                        <span asp-validation-for="GioKetThuc" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Ghi chú -->
+                <div class="mb-3">
+                    <label asp-for="GhiChu" class="form-label fw-semibold">Ghi chú</label>
+                    <textarea asp-for="GhiChu" class="form-control" rows="3" placeholder="Ghi chú thêm (không bắt buộc)..."></textarea>
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Quay lại
+                    </a>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Lưu Ca làm việc
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

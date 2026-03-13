@@ -1,0 +1,114 @@
+﻿@model GYM_Manage.Models.LichLamViecHLV
+@{
+    ViewData["Title"] = Model.MaLich == 0 ? "Thêm Lịch làm việc" : "Chỉnh sửa Lịch làm việc";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    string GetThu(int thu) => thu switch
+    {
+        1 => "Thứ 2",
+        2 => "Thứ 3",
+        3 => "Thứ 4",
+        4 => "Thứ 5",
+        5 => "Thứ 6",
+        6 => "Thứ 7",
+        7 => "Chủ nhật",
+        _ => "-"
+    };
+}
+
+<div class="container-fluid">
+    <h4 class="mb-4 fw-bold text-primary">
+        <i class="bi bi-calendar-check"></i> @ViewData["Title"]
+    </h4>
+
+    <div class="card shadow">
+        <div class="card-header py-3">
+            <h6 class="m-0 fw-bold text-dark">Thông tin lịch làm việc</h6>
+        </div>
+
+        <div class="card-body">
+            <form asp-action="CreateOrEdit" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                @* Ẩn ID khi chỉnh sửa *@
+                @if (Model.MaLich > 0)
+                {
+                    <input type="hidden" asp-for="MaLich" />
+                }
+
+                <div class="row">
+                    <!-- Huấn luyện viên -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="MaHuanLuyenVien" class="form-label fw-semibold">Huấn luyện viên</label>
+                        <select asp-for="MaHuanLuyenVien" class="form-select" asp-items="ViewBag.HLVList"></select>
+                        <span asp-validation-for="MaHuanLuyenVien" class="text-danger"></span>
+                    </div>
+
+                    <!-- Ca làm việc -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="MaCa" class="form-label fw-semibold">Ca làm việc</label>
+                        <select asp-for="MaCa" class="form-select" asp-items="ViewBag.CaList"></select>
+                        <span asp-validation-for="MaCa" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Ngày làm việc -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="NgayLamViec" class="form-label fw-semibold">Ngày làm việc</label>
+                        <input asp-for="NgayLamViec" type="date" class="form-control" />
+                        <span asp-validation-for="NgayLamViec" class="text-danger"></span>
+                    </div>
+
+                    <!-- Thứ trong tuần (read-only, auto tính) -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Thứ</label>
+                        <input type="text" id="ThuText" class="form-control" value="@GetThu(Model.ThuTrongTuan)" readonly />
+                        <input type="hidden" asp-for="ThuTrongTuan" />
+                    </div>
+                </div>
+
+                <!-- Nút điều hướng -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Quay lại
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Lưu thông tin
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Tự động tính thứ khi người dùng chọn ngày
+        document.querySelector("input[name='NgayLamViec']").addEventListener("change", function () {
+            let date = new Date(this.value);
+            if (!isNaN(date)) {
+                let thu = date.getDay(); // 0 = CN, 1 = T2, ... 6 = T7
+                if (thu === 0) thu = 7;
+
+                let thuText = {
+                    1: "Thứ 2",
+                    2: "Thứ 3",
+                    3: "Thứ 4",
+                    4: "Thứ 5",
+                    5: "Thứ 6",
+                    6: "Thứ 7",
+                    7: "Chủ nhật"
+                };
+
+                document.getElementById("ThuText").value = thuText[thu];
+                document.querySelector("input[name='ThuTrongTuan']").value = thu;
+            }
+        });
+    </script>
+}
+}

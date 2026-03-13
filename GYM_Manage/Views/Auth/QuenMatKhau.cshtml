@@ -1,0 +1,56 @@
+﻿@{
+    ViewData["Title"] = "Quên mật khẩu";
+    Layout = "_Layout";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h3 class="fw-bold mb-0">QUÊN MẬT KHẨU</h3>
+                </div>
+
+                <div class="card-body p-4">
+
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger">@TempData["Error"]</div>
+                    }
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success">@TempData["Success"]</div>
+                    }
+
+                    <form method="post" asp-controller="Auth" asp-action="SendOtp">
+                        <div class="mb-3">
+                            <label class="form-label">Nhập email đăng ký</label>
+                            <input type="email" class="form-control" name="email"
+                                   placeholder="youremail@gmail.com" required />
+                        </div>
+
+                        <button class="btn btn-primary w-100 mt-3">Gửi mã OTP</button>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <a href="@Url.Action("Login", "Auth")" class="accent-link">← Quay lại đăng nhập</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .accent-link {
+            color: #4e73df;
+            text-decoration: none;
+        }
+
+            .accent-link:hover {
+                text-decoration: underline;
+            }
+    </style>
+}

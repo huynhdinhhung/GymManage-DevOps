@@ -1,0 +1,45 @@
+﻿@model string
+@{
+    ViewData["Title"] = "Xác nhận OTP";
+    Layout = "_Layout";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h3 class="fw-bold mb-0">XÁC NHẬN OTP</h3>
+                </div>
+
+                <div class="card-body p-4">
+
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger">@TempData["Error"]</div>
+                    }
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success">@TempData["Success"]</div>
+                    }
+
+                    <form method="post" asp-controller="Auth" asp-action="VerifyOtp">
+                        <input type="hidden" name="email" value="@Model" />
+
+                        <div class="mb-3">
+                            <label class="form-label">Nhập mã OTP đã gửi vào email</label>
+                            <input type="text" class="form-control" name="otp" required />
+                        </div>
+
+                        <button class="btn btn-primary w-100 mt-3">Xác nhận OTP</button>
+                    </form>
+
+                </div>
+
+                <div class="text-center py-3">
+                    <a href="@Url.Action("QuenMatKhau", "Auth")" class="accent-link">← Gửi lại mã OTP</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

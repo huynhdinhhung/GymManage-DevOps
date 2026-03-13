@@ -1,0 +1,165 @@
+﻿@model IEnumerable<GYM_Manage.Models.HuanLuyenVien>
+
+@{
+    ViewData["Title"] = "Quản Lý Huấn Luyện Viên";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var yeuCau = ViewBag.YeuCauCounts as Dictionary<int, int>;
+}
+
+<div class="container-fluid">
+
+    <!-- TITLE -->
+    <h4 class="d-flex justify-content-between align-items-center mb-4">
+        <span class="fw-bolder">Quản Lý Huấn Luyện Viên</span>
+
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus"></i> Thêm mới
+        </a>
+    </h4>
+
+    <div class="card shadow mb-4">
+
+        <!-- HEADER -->
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 fw-bold">Danh sách HLV</h6>
+
+            <form asp-action="Search" method="get" class="d-flex">
+                <input type="text" name="keyword" class="form-control me-2"
+                       placeholder="Tìm kiếm huấn luyện viên...">
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- BODY -->
+        <div class="card-body table-responsive">
+
+            <table class="table table-bordered table-hover align-middle text-center">
+                <thead class="bg-light">
+                    <tr>
+                        <th>Ảnh</th>
+                        <th>Họ tên</th>
+                        <th>Chuyên môn</th>
+                        <th>Chứng chỉ</th>
+                        <th>Ngày tuyển</th>
+                        <th>Trạng thái</th>
+                        <th>Yêu cầu đổi lịch</th>
+                        <th width="240px">Thao tác</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var hlv in Model)
+                    {
+                        int count = (yeuCau != null && yeuCau.ContainsKey(hlv.MaHuanLuyenVien))
+                        ? yeuCau[hlv.MaHuanLuyenVien]
+                        : 0;
+
+                        <tr>
+                            <!-- ẢNH -->
+                            <td>
+                                <img src="@hlv.AnhDaiDien"
+                                     class="rounded-circle"
+                                     width="60" height="60"
+                                     style="object-fit:cover;" />
+                            </td>
+
+                            <!-- HỌ TÊN -->
+                            <td>@hlv.HoTen</td>
+
+                            <!-- CHUYÊN MÔN -->
+                            <td>@hlv.ChuyenMon</td>
+
+                            <!-- CHỨNG CHỈ -->
+                            <td>@hlv.ChungChi</td>
+
+                            <!-- NGÀY TUYỂN -->
+                            <td>@hlv.NgayTuyenDung?.ToString("dd/MM/yyyy")</td>
+
+                            <!-- TRẠNG THÁI -->
+                            <td>
+                                <span class="badge @(hlv.TrangThai == "HoatDong" ? "bg-success" : "bg-secondary")">
+                                    @hlv.TrangThai
+                                </span>
+                            </td>
+
+                            <!-- YÊU CẦU ĐỔI LỊCH -->
+                            <td>
+                                @if (count > 0)
+                                {
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="bi bi-bell-fill"></i> @count yêu cầu
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Không</span>
+                                }
+                            </td>
+
+                            <!-- ACTION BUTTONS -->
+                            <td>
+                                <div class="btn-group">
+
+                                    <!-- Sửa -->
+                                    <a asp-action="Edit"
+                                       asp-route-id="@hlv.MaHuanLuyenVien"
+                                       class="btn btn-sm btn-primary" title="Sửa">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+
+                                    <!-- Xóa -->
+                                    <a asp-action="Delete"
+                                       asp-route-id="@hlv.MaHuanLuyenVien"
+                                       onclick="return confirm('Bạn có chắc muốn xóa HLV này không?');"
+                                       class="btn btn-sm btn-danger" title="Xóa">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+
+                                    <!-- QUẢN LÝ CA -->
+                                    <a asp-area="Admin"
+                                       asp-controller="QL_CaLamViec"
+                                       asp-action="Index"
+                                       asp-route-hlvId="@hlv.MaHuanLuyenVien"
+                                       class="btn btn-sm btn-info"
+                                       title="Ca làm việc">
+                                        <i class="bi bi-clock-history"></i>
+                                    </a>
+
+                                    <!-- QUẢN LÝ LỊCH -->
+                                    <a asp-area="Admin"
+                                       asp-controller="QL_LichLamViec"
+                                       asp-action="Index"
+                                       asp-route-hlvId="@hlv.MaHuanLuyenVien"
+                                       class="btn btn-sm btn-success"
+                                       title="Lịch làm việc">
+                                        <i class="bi bi-calendar-week"></i>
+                                    </a>
+
+                                    <!-- XEM YÊU CẦU -->
+                                    @if (count > 0)
+                                    {
+                                        <a asp-area="Admin"
+                                           asp-controller="QL_YeuCauDoiLich"
+                                           asp-action="Index"
+                                           class="btn btn-sm btn-warning"
+                                           title="Yêu cầu đổi lịch">
+                                            <i class="bi bi-shuffle"></i>
+                                        </a>
+                                    }
+
+                                </div>
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,122 @@
+﻿@model IEnumerable<GYM_Manage.Models.ThietBi>
+@{
+    ViewData["Title"] = "Quản Lý Thiết Bị";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container-fluid">
+
+    <h4 class="d-flex justify-content-between align-items-center mb-4">
+        <span class="fw-bolder">Quản Lý Thiết Bị</span>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus"></i> Thêm mới
+        </a>
+    </h4>
+
+    <div class="card shadow mb-4">
+
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold">Danh sách thiết bị</h6>
+
+            <form asp-action="Search" method="get" class="d-flex">
+                <input type="text" name="keyword" class="form-control me-2" placeholder="Tìm kiếm thiết bị...">
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Ảnh</th>
+                            <th>Tên thiết bị</th>
+                            <th>Danh mục</th>
+                            <th>Ngày mua</th>
+                            <th>Bảo trì cuối</th>
+                            <th>Trạng thái</th>
+                            <th width="130px">Thao tác</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+
+                                <!-- Hình ảnh thiết bị -->
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.HinhAnh))
+                                    {
+                                        <img src="@item.HinhAnh" width="70" height="70" class="rounded border" />
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Không có ảnh</span>
+                                    }
+                                </td>
+
+                                <td>@item.TenThietBi</td>
+                                <td>@item.DanhMuc</td>
+
+                                <td>@item.NgayMua?.ToString("dd/MM/yyyy")</td>
+                                <td>@item.NgayBaoTriCuoi?.ToString("dd/MM/yyyy")</td>
+
+                                <td>
+                                    @switch (item.TrangThai)
+                                    {
+                                        case "HoatDong":
+                                            <span class="badge bg-success">Hoạt động tốt</span>
+                                            break;
+
+                                        case "BaoTri":
+                                            <span class="badge bg-warning text-dark">Cần bảo trì</span>
+                                            break;
+
+                                        case "SuaChua":
+                                            <span class="badge bg-danger">Đang sửa chữa</span>
+                                            break;
+
+                                        case "Ngung":
+                                            <span class="badge bg-secondary">Ngưng hoạt động</span>
+                                            break;
+
+                                        default:
+                                            <span class="badge bg-light text-dark">@item.TrangThai</span>
+                                            break;
+                                    }
+                                </td>
+
+                                <td>
+                                    <div class="btn-group">
+
+                                        <a asp-action="Edit" asp-route-id="@item.MaThietBi"
+                                           class="btn btn-sm btn-primary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+
+                                        <a asp-action="Delete" asp-route-id="@item.MaThietBi"
+                                           class="btn btn-sm btn-danger"
+                                           onclick="return confirm('Bạn có chắc chắn muốn xóa không?');">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+
+                                    </div>
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

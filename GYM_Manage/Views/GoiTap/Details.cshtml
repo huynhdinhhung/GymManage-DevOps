@@ -1,0 +1,187 @@
+﻿@model GYM_Manage.Models.GoiTap
+@{
+    ViewData["Title"] = "Chi tiết gói tập";
+    var nguoiDung = ViewBag.NguoiDung as GYM_Manage.Models.NguoiDung;
+
+    bool isVipPackage = Model.LoaiGoi?.ToLower() == "vip";
+}
+
+<div class="container py-5">
+
+    <div class="row g-4">
+
+        <!-- Ảnh + Badge VIP -->
+        <div class="col-md-6">
+
+            <div class="position-relative card border-0 shadow-lg vip-border @(isVipPackage ? "vip-card" : "")">
+
+                <!-- Badge VIP -->
+                @if (isVipPackage)
+                {
+                    <div class="vip-badge">
+                        <i class="bi bi-star-fill"></i> VIP Exclusive
+                    </div>
+                }
+
+                <img src="@(string.IsNullOrEmpty(Model.AnhDemo) ? "/images/default-package.jpg" : Model.AnhDemo)"
+                     class="card-img-top"
+                     style="height: 360px; object-fit: cover;" />
+
+            </div>
+
+        </div>
+
+        <!-- Panel thông tin -->
+        <div class="col-md-6">
+
+            <div class="card border-0 shadow-lg p-4 @(isVipPackage ? "vip-info-card" : "")">
+
+                <h2 class="fw-bold @(isVipPackage ? "text-vip" : "")">
+                    @Model.TenGoiTap
+                </h2>
+
+                <p class="text-muted">@Model.MoTa</p>
+
+                <ul class="list-unstyled mt-3">
+                    <li><strong>⏳ Thời hạn:</strong> @Model.ThoiHan ngày</li>
+                    <li>
+                        <strong>💰 Giá:</strong>
+                        <span class="fw-bold @(isVipPackage ? "text-vip-price" : "text-primary") fs-4">
+                            @Model.GiaTien.ToString("N0")₫
+                        </span>
+                    </li>
+                    <li><strong>🏷 Loại gói:</strong> @Model.LoaiGoi</li>
+                    <li><strong>📌 Trạng thái:</strong> @Model.TrangThai</li>
+                </ul>
+
+                <hr />
+
+                <!-- Nút đăng ký -->
+                <div class="d-flex gap-3 mt-4">
+
+                    @if (isVipPackage)
+                    {
+                        if (nguoiDung == null || !nguoiDung.IsVip)
+                        {
+                            <button class="btn btn-secondary vip-disabled-btn" disabled>
+                                <i class="bi bi-lock-fill"></i> Chỉ dành cho VIP
+                            </button>
+                        }
+                        else
+                        {
+                            <a asp-action="DangKy" asp-route-id="@Model.MaGoiTap"
+                               class="btn vip-register-btn">
+                                <i class="bi bi-star-fill"></i> Đăng ký VIP
+                            </a>
+                        }
+                    }
+                    else
+                    {
+                        <a asp-action="DangKy"
+                           asp-route-id="@Model.MaGoiTap"
+                           class="btn btn-primary btn-lg">
+                            <i class="bi bi-check-circle"></i> Đăng ký ngay
+                        </a>
+                    }
+
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Quay lại
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Lợi ích -->
+    <div class="mt-5">
+        <h4 class="fw-bold mb-3">Lợi ích khi đăng ký gói này</h4>
+
+        <div class="list-group shadow-sm rounded">
+
+            @if (isVipPackage)
+            {
+                <div class="list-group-item"><i class="bi bi-gem text-vip"></i> PT riêng 1-1 theo lịch của bạn</div>
+                <div class="list-group-item"><i class="bi bi-lightning-charge text-vip"></i> Ưu tiên sử dụng phòng tập VIP</div>
+                <div class="list-group-item"><i class="bi bi-award text-vip"></i> Tư vấn dinh dưỡng chuyên sâu</div>
+                <div class="list-group-item"><i class="bi bi-stars text-vip"></i> Miễn phí 10 buổi GYM trị liệu</div>
+            }
+            else
+            {
+                <div class="list-group-item">💪 Được huấn luyện bởi HLV chuyên nghiệp</div>
+                <div class="list-group-item">🏋️ Thiết bị hiện đại, không gian thoải mái</div>
+                <div class="list-group-item">📅 Lịch tập linh hoạt, phù hợp mọi người</div>
+            }
+
+        </div>
+    </div>
+</div>
+
+
+
+<style>
+    /* ==== VIP THEME ==== */
+
+    .vip-card {
+        border: 3px solid #f5d142 !important;
+    }
+
+    .vip-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: linear-gradient(45deg, #f6d365, #fda085);
+        padding: 8px 15px;
+        border-radius: 50px;
+        color: #fff;
+        font-weight: bold;
+        font-size: 14px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .vip-info-card {
+        background: linear-gradient(135deg, #fffdf2, #fff7d4);
+        border: 1px solid #f5d142;
+    }
+
+    .text-vip {
+        background: linear-gradient(90deg, #ffcf40, #ffae00);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .text-vip-price {
+        color: #ffb300 !important;
+    }
+
+    .vip-register-btn {
+        background: linear-gradient(45deg, #ffcf40, #ff9f00);
+        border: none;
+        color: #3c2c00;
+        font-weight: bold;
+        padding: 10px 25px;
+        border-radius: 8px;
+        box-shadow: 0 5px 12px rgba(255, 170, 0, 0.5);
+        transition: all .2s;
+    }
+
+        .vip-register-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 18px rgba(255, 170, 0, .6);
+        }
+
+    .vip-disabled-btn {
+        background: #aaa;
+        border: none;
+        opacity: 0.8;
+    }
+
+    .list-group-item i {
+        margin-right: 6px;
+        font-size: 1.3rem;
+    }
+</style>
