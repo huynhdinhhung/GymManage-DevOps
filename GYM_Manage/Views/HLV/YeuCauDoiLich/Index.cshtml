@@ -1,0 +1,207 @@
+﻿@model IEnumerable<GYM_Manage.Models.YeuCauDoiLich>
+
+@{
+    Layout = "~/Views/Shared/_LayoutHLV.cshtml";
+
+    string Badge(string tt) => tt switch
+    {
+        "ChoHLV" => "badge bg-warning text-dark",
+        "ChoAdmin" => "badge bg-info",
+        "DaDuyet" => "badge bg-success",
+        "TuChoi" => "badge bg-danger",
+        _ => "badge bg-secondary"
+    };
+
+    var hlv = ViewBag.HLV as GYM_Manage.Models.HuanLuyenVien;
+    var myLich = ViewBag.MyLich as List<GYM_Manage.Models.LichLamViecHLV>;
+    var otherHLVs = ViewBag.OtherHLVs as List<GYM_Manage.Models.HuanLuyenVien>;
+}
+
+<h3 class="fw-bold mb-4">
+    <i class="bi bi-shuffle"></i> Đổi ca làm việc
+</h3>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<div class="card shadow p-3 mb-4">
+    <h5 class="fw-bold mb-3">Gửi yêu cầu đổi ca</h5>
+
+    <form method="post" asp-action="GuiYeuCau">
+        <div class="row mb-3">
+
+            <!-- Ca của bạn -->
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Ca của bạn</label>
+                <select class="form-select" name="maLichGui" required>
+                    <option value="">-- Chọn ca muốn đổi --</option>
+                    @foreach (var l in myLich)
+                    {
+                        <option value="@l.MaLich">
+                            @l.NgayLamViec.ToString("dd/MM") - @l.CaLamViec?.TenCa
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <!-- HLV muốn đổi -->
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Đổi với HLV</label>
+                <select id="hlvNhanSelect" name="maHlvNhan" class="form-select" required>
+                    <option value="">-- Chọn HLV --</option>
+                    @foreach (var h in otherHLVs)
+                    {
+                        <option value="@h.MaHuanLuyenVien">@h.HoTen</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Ca của HLV đó -->
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Ca của HLV đó</label>
+                <select id="caNhanSelect" name="maLichNhan" class="form-select" required>
+                    <option value="">-- Chọn ca --</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="mb-3">
+            <label class="fw-bold">Lý do</label>
+            <textarea class="form-control" name="lyDo" required rows="2"></textarea>
+        </div>
+
+        <button class="btn btn-primary">
+            <i class="bi bi-send"></i> Gửi yêu cầu
+        </button>
+    </form>
+</div>
+
+<h4 class="fw-bold my-4">Danh sách yêu cầu liên quan</h4>
+
+<div class="table-responsive">
+    <table class="table table-hover table-bordered shadow-sm align-middle">
+
+        <thead class="table-light text-center">
+            <tr>
+                <th>HLV gửi</th>
+                <th>HLV nhận</th>
+                <th>Ca gửi</th>
+                <th>Ca nhận</th>
+                <th>Trạng thái</th>
+                <th>Ngày gửi</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var yc in Model)
+            {
+                <tr>
+                    <td>@yc.HlvGui?.HoTen</td>
+                    <td>@yc.HlvNhan?.HoTen</td>
+
+                    <td>@yc.LichGui?.NgayLamViec.ToString("dd/MM") - @yc.LichGui?.CaLamViec?.TenCa</td>
+
+                    <td>@yc.LichNhan?.NgayLamViec.ToString("dd/MM") - @yc.LichNhan?.CaLamViec?.TenCa</td>
+
+                    <td class="text-center">
+                        <span class="@Badge(yc.TrangThai)">@yc.TrangThai</span>
+                    </td>
+
+                    <td class="text-center">@yc.NgayTao.ToString("dd/MM/yyyy HH:mm")</td>
+
+                    <td class="text-center">
+                        @if (yc.MaHlvNhan == hlv.MaHuanLuyenVien && yc.TrangThai == "ChoHLV")
+                        {
+                            <button onclick="openConfirm('/HLV/HLV_YeuCauDoiLich/DongY', @yc.MaYeuCau, 'Bạn có chắc muốn đồng ý?')"
+                                    class="btn btn-success btn-sm">
+                                <i class="bi bi-check-circle"></i>
+                            </button>
+
+                            <button onclick="openConfirm('/HLV/HLV_YeuCauDoiLich/TuChoi', @yc.MaYeuCau, 'Bạn có chắc muốn từ chối?')"
+                                    class="btn btn-danger btn-sm">
+                                <i class="bi bi-x-circle"></i>
+                            </button>
+                        }
+                        else
+                        {
+                            <span class="text-muted">-</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+</div>
+
+<!-- ============== MODAL XÁC NHẬN ============== -->
+<div class="modal fade" id="confirmModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Xác nhận</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <p id="confirmMessage"></p>
+            </div>
+
+            <div class="modal-footer">
+                <form id="confirmForm" method="post">
+                    <input type="hidden" name="idYeuCau" id="modalRequestId" />
+                    <button type="submit" class="btn btn-danger">Xác nhận</button>
+                </form>
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            $("#hlvNhanSelect").on("change", function () {
+                var id = $(this).val();
+
+                if (!id) {
+                    $("#caNhanSelect").html("<option value=''>-- Chọn ca --</option>");
+                    return;
+                }
+
+                $("#caNhanSelect").html("<option>Đang tải...</option>");
+
+                $.ajax({
+                    url: "@Url.Action("GetLichTheoHLV", "HLV_YeuCauDoiLich", new { area = "HLV" })",
+                    data: { hlvId: id },
+                    type: "GET",
+                    success: function (data) {
+                        $("#caNhanSelect").html(data);
+                    },
+                    error: function () {
+                        $("#caNhanSelect").html("<option value=''>Không thể tải dữ liệu</option>");
+                    }
+                });
+            });
+
+        });
+
+        function openConfirm(actionUrl, requestId, message) {
+            $("#confirmForm").attr("action", actionUrl);
+            $("#modalRequestId").val(requestId);
+            $("#confirmMessage").text(message);
+            $("#confirmModal").modal("show");
+        }
+    </script>
+}

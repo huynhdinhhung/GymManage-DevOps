@@ -1,0 +1,43 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutHLV.cshtml";
+}
+
+<h3 class="fw-bold mb-4">
+    <i class="bi bi-speedometer2"></i> Xin chào, @ViewBag.HLV?.HoTen
+</h3>
+
+<div class="row g-3">
+
+    <!-- Lịch làm việc -->
+    <div class="col-6 col-md-3">
+        <div class="card shadow-sm text-center p-3 h-100">
+            <h6 class="text-muted mb-2">Lịch làm việc</h6>
+            <h2 class="fw-bold text-primary">@ViewBag.SoLich</h2>
+        </div>
+    </div>
+
+    <!-- Yêu cầu đã gửi -->
+    <div class="col-6 col-md-3">
+        <div class="card shadow-sm text-center p-3 h-100">
+            <h6 class="text-muted mb-2">Yêu cầu đã gửi</h6>
+            <h2 class="fw-bold text-warning">@ViewBag.SoYeuCauGui</h2>
+        </div>
+    </div>
+
+    <!-- Yêu cầu đang chờ nhận -->
+    <div class="col-6 col-md-3">
+        <div class="card shadow-sm text-center p-3 h-100">
+            <h6 class="text-muted mb-2">Yêu cầu bạn nhận</h6>
+            <h2 class="fw-bold text-danger">@ViewBag.SoYeuCauNhan</h2>
+        </div>
+    </div>
+
+    <!-- Thông báo chưa đọc -->
+    <div class="col-6 col-md-3">
+        <div class="card shadow-sm text-center p-3 h-100">
+            <h6 class="text-muted mb-2">Thông báo chưa đọc</h6>
+            <h2 class="fw-bold text-success">@ViewBag.SoThongBao</h2>
+        </div>
+    </div>
+
+</div>

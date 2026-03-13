@@ -1,0 +1,32 @@
+﻿@model string
+@{
+    ViewData["Title"] = "Đổi mật khẩu mới";
+    Layout = "_Layout";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h3 class="fw-bold mb-0">ĐỔI MẬT KHẨU</h3>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <form method="post" asp-controller="Auth" asp-action="ResetPassword">
+                        <input type="hidden" name="email" value="@Model" />
+
+                        <div class="mb-3">
+                            <label class="form-label">Mật khẩu mới</label>
+                            <input type="password" class="form-control" name="newPassword" required />
+                        </div>
+
+                        <button class="btn btn-success w-100 mt-3">Cập nhật mật khẩu</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

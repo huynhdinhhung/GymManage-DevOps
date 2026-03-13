@@ -1,0 +1,174 @@
+﻿@model IEnumerable<GYM_Manage.Models.LichLamViecHLV>
+
+@{
+    ViewData["Title"] = "Quản lý Lịch làm việc";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    string GetThu(int thu)
+    {
+        return thu switch
+        {
+            1 => "Thứ 2",
+            2 => "Thứ 3",
+            3 => "Thứ 4",
+            4 => "Thứ 5",
+            5 => "Thứ 6",
+            6 => "Thứ 7",
+            7 => "Chủ nhật",
+            _ => "-"
+        };
+    }
+
+    string BadgeThu(int thu)
+    {
+        return thu switch
+        {
+            7 => "bg-danger",
+            6 => "bg-warning",
+            _ => "bg-primary"
+        };
+    }
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold m-0">
+            <i class="bi bi-calendar-check me-2"></i>
+
+            @if (ViewBag.HLV != null)
+            {
+                <text>Lịch làm việc của @ViewBag.HLV.HoTen</text>
+            }
+            else
+            {
+                <text>Danh sách lịch làm việc</text>
+            }
+        </h3>
+
+        <div>
+            <a asp-action="CreateOrEdit"
+               asp-route-hlvId="@ViewBag.HLV?.MaHuanLuyenVien"
+               class="btn btn-primary btn-sm me-2">
+                <i class="bi bi-plus-circle"></i> Thêm lịch
+            </a>
+
+            <a asp-area="Admin"
+               asp-controller="QL_HuanLuyenVien"
+               asp-action="Index"
+               class="btn btn-secondary btn-sm">
+                <i class="bi bi-arrow-left-circle"></i> Quay lại
+            </a>
+        </div>
+    </div>
+
+    <!-- Alert -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success shadow-sm">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger shadow-sm">@TempData["ErrorMessage"]</div>
+    }
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-dark text-white fw-bold">
+            <i class="bi bi-list-ul"></i> Danh sách lịch làm việc
+        </div>
+
+        <div class="card-body p-0">
+            <table class="table table-hover table-bordered mb-0 text-center align-middle">
+                <thead class="table-secondary">
+                    <tr>
+                        <th>HLV</th>
+                        <th>Ngày làm việc</th>
+                        <th>Thứ</th>
+                        <th>Ca</th>
+                        <th>Bắt đầu</th>
+                        <th>Kết thúc</th>
+                        <th width="150">Thao tác</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var lich in Model)
+                        {
+                            bool isToday = lich.NgayLamViec.Date == DateTime.Today;
+
+                            <tr class="@(isToday ? "table-info fw-bold" : "")">
+
+                                <td>@lich.HuanLuyenVien?.HoTen</td>
+
+                                <td>
+                                    @lich.NgayLamViec.ToString("dd/MM/yyyy")
+                                    @if (isToday)
+                                    {
+                                        <span class="badge bg-success ms-2">Hôm nay</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <span class="badge @BadgeThu(lich.ThuTrongTuan)">
+                                        @GetThu(lich.ThuTrongTuan)
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="fw-bold text-primary">@lich.CaLamViec?.TenCa</span>
+                                </td>
+
+                                <td>@lich.CaLamViec?.GioBatDau.ToString(@"hh\:mm")</td>
+
+                                <td>@lich.CaLamViec?.GioKetThuc.ToString(@"hh\:mm")</td>
+
+                                <td>
+                                    <a asp-action="CreateOrEdit"
+                                       asp-route-id="@lich.MaLich"
+                                       asp-route-hlvId="@ViewBag.HLV?.MaHuanLuyenVien"
+                                       class="btn btn-warning btn-sm me-1">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+
+                                    <form asp-action="Delete"
+                                          asp-route-id="@lich.MaLich"
+                                          method="post"
+                                          class="d-inline"
+                                          onsubmit="return confirm('Bạn chắc chắn muốn xóa lịch này?');">
+
+                                        <button class="btn btn-danger btn-sm">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="py-4 text-muted">
+                                <i class="bi bi-exclamation-circle fs-3"></i>
+                                <div>Không có lịch làm việc nào.</div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    table td, table th {
+        vertical-align: middle !important;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #fafafa;
+        cursor: pointer;
+    }
+</style>

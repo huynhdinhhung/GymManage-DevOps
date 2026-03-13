@@ -1,0 +1,107 @@
+﻿@model IEnumerable<GYM_Manage.Models.CaLamViec>
+@{
+    ViewData["Title"] = "Quản lý Ca làm việc";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container-fluid">
+    <h4 class="fw-bold mb-4">
+        <i class="bi bi-clock-history"></i> Danh sách Ca làm việc
+    </h4>
+
+    <!-- Thông báo -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+    @if (TempData["InfoMessage"] != null)
+    {
+        <div class="alert alert-info">@TempData["InfoMessage"]</div>
+    }
+
+    <div class="card shadow">
+        <div class="card-header d-flex justify-content-between align-items-center">
+
+            <span class="fw-bold">Danh sách Ca</span>
+
+            <div>
+                <!-- Nút thêm Ca -->
+                <a asp-action="CreateOrEdit" class="btn btn-sm btn-primary me-2">
+                    <i class="bi bi-plus-circle"></i> Thêm Ca làm việc
+                </a>
+
+                <!-- Nút thoát -->
+                <a asp-area="Admin"
+                   asp-controller="QL_HuanLuyenVien"
+                   asp-action="Index"
+                   class="btn btn-sm btn-secondary">
+                    <i class="bi bi-arrow-left-circle"></i> Thoát
+                </a>
+            </div>
+
+        </div>
+
+        <div class="card-body">
+            <table class="table table-bordered table-hover text-center align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Tên Ca</th>
+                        <th>Giờ bắt đầu</th>
+                        <th>Giờ kết thúc</th>
+                        <th>Ghi chú</th>
+                        <th width="150px">Thao tác</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var ca in Model)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@ca.TenCa</td>
+
+                                <!-- Format TimeSpan → HH:mm -->
+                                <td>@ca.GioBatDau.ToString(@"hh\:mm")</td>
+                                <td>@ca.GioKetThuc.ToString(@"hh\:mm")</td>
+
+                                <td>@(string.IsNullOrWhiteSpace(ca.GhiChu) ? "-" : ca.GhiChu)</td>
+
+                                <td>
+                                    <a asp-action="CreateOrEdit"
+                                       asp-route-id="@ca.MaCa"
+                                       class="btn btn-sm btn-warning me-1">
+                                        <i class="bi bi-pencil-square"></i> Sửa
+                                    </a>
+
+                                    <form asp-action="Delete"
+                                          asp-route-id="@ca.MaCa"
+                                          method="post"
+                                          class="d-inline"
+                                          onsubmit="return confirm('Bạn có chắc muốn xóa ca này không?');">
+                                        <button class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i> Xóa
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-muted fst-italic">
+                                Chưa có ca làm việc nào.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>

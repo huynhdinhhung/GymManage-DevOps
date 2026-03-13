@@ -1,0 +1,103 @@
+﻿@model IEnumerable<GYM_Manage.Models.LichTapThanhVien>
+
+@{
+    ViewData["Title"] = "Lịch tập học viên";
+    Layout = "~/Views/Shared/_LayoutHLV.cshtml";
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">
+            <i class="bi bi-list-check me-2"></i> Lịch tập học viên
+        </h5>
+    </div>
+
+    <div class="card-body">
+
+        @if (!Model.Any())
+        {
+            <div class="alert alert-info d-flex align-items-center">
+                <i class="bi bi-info-circle me-2 fs-5"></i>
+                <div>Hiện bạn chưa có lịch tập nào.</div>
+            </div>
+        }
+        else
+        {
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Học viên</th>
+                        <th>Ngày tập</th>
+                        <th>Ca tập</th>
+                        <th>HLV chính</th>
+                        <th>HLV thay thế</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <!-- Học viên -->
+                            <td>
+                                <strong>@item.ThanhVien?.NguoiDung?.HoTen</strong><br />
+                                <small class="text-muted">@item.ThanhVien?.SoDienThoai</small>
+                            </td>
+
+                            <!-- Ngày tập -->
+                            <td>@item.NgayTap.ToString("dd/MM/yyyy")</td>
+
+                            <!-- Ca tập -->
+                            <td>
+                                @if (item.CaLamViec != null)
+                                {
+                                    <b>@item.CaLamViec.TenCa</b>
+                                    <br />
+                                    <small class="text-muted">
+                                        @item.CaLamViec.GioBatDau.ToString(@"hh\:mm")
+                                        -
+                                        @item.CaLamViec.GioKetThuc.ToString(@"hh\:mm")
+                                    </small>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Không có ca</span>
+                                }
+                            </td>
+
+                            <!-- HLV chính -->
+                            <td>
+                                @if (item.HuanLuyenVien != null)
+                                {
+                                    <span class="badge bg-success">
+                                        @item.HuanLuyenVien.HoTen
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </td>
+
+                            <!-- HLV thay thế -->
+                            <td>
+                                @if (item.MaHuanLuyenVienThayThe != null && item.HuanLuyenVienThayThe != null)
+                                {
+                                    <span class="badge bg-warning text-dark">
+                                        @item.HuanLuyenVienThayThe.HoTen
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Không có</span>
+                                }
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+    </div>
+</div>

@@ -1,0 +1,38 @@
+﻿@model GYM_Manage.Models.HuanLuyenVien
+
+@{
+    ViewData["Title"] = "Thông Tin Huấn Luyện Viên";
+}
+
+<div class="container py-5">
+
+    <div class="row">
+        <div class="col-md-5">
+            <img src="@Model.AnhDaiDien"
+                 class="img-fluid rounded shadow"
+                 style="height:420px;object-fit:cover" />
+        </div>
+
+        <div class="col-md-7">
+            <h2 class="fw-bold">@Model.NguoiDung?.HoTen</h2>
+            <h5 class="text-primary">@Model.ChuyenMon</h5>
+
+            <hr />
+
+            <div class="mb-3">
+                <label class="form-label">Chuyên môn</label>
+                <input asp-for="ChuyenMon" class="form-control" placeholder="Nhập chuyên môn" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Chứng chỉ</label>
+                <input asp-for="ChungChi" class="form-control" placeholder="Nhập chứng chỉ" />
+            </div>
+
+            <a href="/GoiTap" class="btn btn-primary btn-lg mt-4">
+                Đăng ký tập với HLV
+            </a>
+        </div>
+    </div>
+
+</div>

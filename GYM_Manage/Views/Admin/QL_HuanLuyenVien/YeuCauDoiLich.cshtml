@@ -1,0 +1,179 @@
+﻿@model IEnumerable<GYM_Manage.Models.YeuCauDoiLich>
+
+@{
+    ViewData["Title"] = "Yêu Cầu Đổi Ca";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    string GetThu(int? thu) =>
+        thu switch
+        {
+            1 => "Thứ 2",
+            2 => "Thứ 3",
+            3 => "Thứ 4",
+            4 => "Thứ 5",
+            5 => "Thứ 6",
+            6 => "Thứ 7",
+            7 => "Chủ nhật",
+            _ => "-"
+        };
+}
+
+<div class="container-fluid">
+
+    <h3 class="fw-bold mb-4">
+        <i class="bi bi-shuffle me-2"></i> Quản lý yêu cầu đổi ca
+    </h3>
+
+    <a asp-area="Admin"
+       asp-controller="QL_HuanLuyenVien"
+       asp-action="Index"
+       class="btn btn-secondary mb-3 shadow-sm">
+        <i class="bi bi-arrow-left"></i> Quay lại danh sách HLV
+    </a>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success shadow-sm">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger shadow-sm">@TempData["ErrorMessage"]</div>
+    }
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-dark text-white fw-bold">
+            <i class="bi bi-list-task me-1"></i> Danh sách yêu cầu
+        </div>
+
+        <div class="card-body p-0 table-responsive">
+
+            <table class="table table-hover table-bordered mb-0 text-center align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th width="200">HLV gửi</th>
+                        <th width="220">Lịch gốc</th>
+                        <th width="200">HLV nhận</th>
+                        <th width="220">Lịch muốn đổi</th>
+                        <th>Ngày gửi</th>
+                        <th>Trạng thái</th>
+                        <th width="200">Thao tác</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var yc in Model)
+                    {
+                        <tr>
+                            <!-- HLV gửi -->
+                            <td>
+                                <div class="fw-bold">@yc.HlvGui?.HoTen</div>
+                                <div class="text-muted small">ID: @yc.MaHlvGui</div>
+                            </td>
+
+                            <!-- Lịch gửi -->
+                            <td>
+                                <div class="badge bg-info text-dark">@yc.LichGui?.CaLamViec?.TenCa</div>
+                                <div class="small">
+                                    @yc.LichGui?.CaLamViec?.GioBatDau - @yc.LichGui?.CaLamViec?.GioKetThuc
+                                </div>
+                                <div class="text-muted small">@GetThu(yc.LichGui?.ThuTrongTuan)</div>
+                            </td>
+
+                            <!-- HLV nhận -->
+                            <td>
+                                <div class="fw-bold">@yc.HlvNhan?.HoTen</div>
+                                <div class="text-muted small">ID: @yc.MaHlvNhan</div>
+                            </td>
+
+                            <!-- Lịch nhận -->
+                            <td>
+                                <div class="badge bg-warning text-dark">@yc.LichNhan?.CaLamViec?.TenCa</div>
+                                <div class="small">
+                                    @yc.LichNhan?.CaLamViec?.GioBatDau - @yc.LichNhan?.CaLamViec?.GioKetThuc
+                                </div>
+                                <div class="text-muted small">@GetThu(yc.LichNhan?.ThuTrongTuan)</div>
+                            </td>
+
+                            <!-- Ngày tạo -->
+                            <td>
+                                @yc.NgayTao.ToString("dd/MM/yyyy HH:mm")
+                            </td>
+
+                            <!-- Trạng thái -->
+                            <td>
+                                @switch (yc.TrangThai)
+                                {
+                                    case "ChoHLV":
+                                        <span class="badge bg-warning text-dark px-3 py-2">Chờ HLV xác nhận</span>
+                                        ;
+                                        break;
+
+                                    case "ChoAdmin":
+                                        <span class="badge bg-info text-dark px-3 py-2">Chờ Admin duyệt</span>
+                                        ;
+                                        break;
+
+                                    case "DaDuyet":
+                                        <span class="badge bg-success px-3 py-2">Đã duyệt</span>
+                                        ;
+                                        break;
+
+                                    case "TuChoi":
+                                        <span class="badge bg-danger px-3 py-2">Từ chối</span>
+                                        ;
+                                        break;
+
+                                    default:
+                                        <span class="badge bg-secondary px-3 py-2">Không xác định</span>
+                                        ;
+                                        break;
+                                }
+                            </td>
+
+                            <!-- Thao tác -->
+                            <td>
+                                @if (yc.TrangThai == "ChoAdmin")
+                                {
+                                    <form asp-action="Duyet" asp-route-id="@yc.MaYeuCau"
+                                          method="post" class="d-inline">
+                                        <button class="btn btn-success btn-sm shadow-sm me-1">
+                                            <i class="bi bi-check-circle"></i> Duyệt
+                                        </button>
+                                    </form>
+
+                                    <form asp-action="TuChoi" asp-route-id="@yc.MaYeuCau"
+                                          method="post" class="d-inline">
+                                        <button class="btn btn-danger btn-sm shadow-sm">
+                                            <i class="bi bi-x-circle"></i> Từ chối
+                                        </button>
+                                    </form>
+                                }
+                                else if (yc.TrangThai == "ChoHLV")
+                                {
+                                    <span class="fst-italic text-muted">Chờ HLV xử lý...</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted fst-italic">Đã xử lý</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    table td, table th {
+        vertical-align: middle !important;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #eef6ff;
+        transition: 0.2s;
+    }
+</style>

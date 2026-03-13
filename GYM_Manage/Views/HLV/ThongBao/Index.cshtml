@@ -1,0 +1,62 @@
+﻿@model IEnumerable<GYM_Manage.Models.ThongBao>
+@{
+    Layout = "~/Views/Shared/_LayoutHLV.cshtml";
+}
+
+<h3 class="fw-bold mb-4">
+    <i class="bi bi-bell"></i> Thông báo của bạn
+</h3>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info text-center">
+        <i class="bi bi-info-circle"></i> Hiện tại bạn chưa có thông báo nào.
+    </div>
+}
+else
+{
+    <div class="text-end mb-3">
+        <form asp-action="MarkAllAsRead" method="post">
+            <button type="submit" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-check2-all"></i> Đánh dấu tất cả đã xem
+            </button>
+        </form>
+    </div>
+
+    <ul class="list-group shadow-sm">
+
+        @foreach (var tb in Model)
+        {
+            bool unseen = !tb.DaDoc;
+
+            <li class="list-group-item d-flex justify-content-between align-items-start
+                      @(unseen ? "bg-warning-subtle border-warning" : "")">
+
+                <div class="ms-2 me-auto">
+                    <div class="fw-bold">
+                        @tb.NoiDung
+
+                        @if (unseen)
+                        {
+                            <span class="badge bg-danger ms-2">Mới</span>
+                        }
+                    </div>
+
+                    <small class="text-muted">
+                        <i class="bi bi-clock"></i>
+                        @tb.NgayGui.ToString("dd/MM/yyyy HH:mm")
+                    </small>
+                </div>
+
+                <form asp-action="Delete" asp-route-id="@tb.MaThongBao" method="post">
+                    <button onclick="return confirm('Bạn có chắc muốn xóa thông báo này không?')"
+                            class="btn btn-sm btn-outline-danger rounded-pill">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </form>
+
+            </li>
+        }
+
+    </ul>
+}
