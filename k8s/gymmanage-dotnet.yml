@@ -46,13 +46,15 @@ spec:
             - secretRef:
                 name: gymmanage-dotnet-secret
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: /health
               port: 18091
             initialDelaySeconds: 20
             periodSeconds: 10
             timeoutSeconds: 3
           livenessProbe:
-            tcpSocket:
+            httpGet:
+              path: /health
               port: 18091
             initialDelaySeconds: 40
             periodSeconds: 20
