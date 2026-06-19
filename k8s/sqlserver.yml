@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gymmanage-sqlserver
+  namespace: gymmanage-dotnet
+spec:
+  type: ClusterIP
+  selector:
+    app: gymmanage-sqlserver
+  ports:
+    - name: sqlserver
+      port: 1433
+      targetPort: 1433
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: gymmanage-sqlserver
+  namespace: gymmanage-dotnet
+spec:
+  serviceName: gymmanage-sqlserver
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gymmanage-sqlserver
+  template:
+    metadata:
+      labels:
+        app: gymmanage-sqlserver
+    spec:
+      containers:
+        - name: sqlserver
+          image: mcr.microsoft.com/mssql/server:2022-latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 1433
+          env:
+            - name: ACCEPT_EULA
+              value: "Y"
+            - name: MSSQL_PID
+              value: "Developer"
+            - name: MSSQL_SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gymmanage-dotnet-secret
+                  key: SA_PASSWORD
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "1Gi"
+            limits:
+              cpu: "1"
+              memory: "2Gi"
+          volumeMounts:
+            - name: sqlserver-data
+              mountPath: /var/opt/mssql
+  volumeClaimTemplates:
+    - metadata:
+        name: sqlserver-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
