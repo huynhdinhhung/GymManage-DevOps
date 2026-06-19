@@ -1,0 +1,54 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: gymmanage-sqlserver-backup
+  namespace: gymmanage-dotnet
+spec:
+  schedule: "0 2 * * *"
+  timeZone: "Asia/Ho_Chi_Minh"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: backup
+              image: mcr.microsoft.com/mssql/server:2022-latest
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: SA_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: gymmanage-dotnet-secret
+                      key: SA_PASSWORD
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  set -e
+
+                  TS=$(date +%F-%H%M%S)
+                  BACKUP_FILE="/var/opt/mssql/backup/GYM_Manage_${TS}.bak"
+
+                  echo "Starting backup: ${BACKUP_FILE}"
+
+                  /opt/mssql-tools18/bin/sqlcmd \
+                    -C \
+                    -S gymmanage-sqlserver \
+                    -U sa \
+                    -P "${SA_PASSWORD}" \
+                    -Q "BACKUP DATABASE [GYM_Manage] TO DISK = N'${BACKUP_FILE}' WITH INIT, COMPRESSION, CHECKSUM;"
+
+                  echo "Verifying backup: ${BACKUP_FILE}"
+
+                  /opt/mssql-tools18/bin/sqlcmd \
+                    -C \
+                    -S gymmanage-sqlserver \
+                    -U sa \
+                    -P "${SA_PASSWORD}" \
+                    -Q "RESTORE VERIFYONLY FROM DISK = N'${BACKUP_FILE}' WITH CHECKSUM;"
+
+                  echo "Backup completed successfully: ${BACKUP_FILE}"
