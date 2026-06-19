@@ -31,6 +31,13 @@ spec:
         - name: gymmanage-dotnet
           image: docker.io/hung16/gymmanage-app:latest
           imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "768Mi"
           ports:
             - containerPort: 18091
           envFrom:
