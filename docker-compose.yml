@@ -12,8 +12,7 @@ services:
       - gymmanage_sqlserver_data:/var/opt/mssql
 
   app:
-    build:
-      context: .
+    image: hung16/gymmanage-app:latest
     container_name: gymmanage-app
     restart: unless-stopped
     environment:
