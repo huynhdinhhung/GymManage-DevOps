@@ -28,6 +28,16 @@ namespace GYM_Manage.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+// MAP ENTITY NAME TO EXISTING SQL SERVER TABLE NAME
+modelBuilder.Entity<NguoiDung>().ToTable("NguoiDung");
+modelBuilder.Entity<ThanhVien>().ToTable("ThanhVien");
+modelBuilder.Entity<HuanLuyenVien>().ToTable("HuanLuyenVien");
+modelBuilder.Entity<GoiTap>().ToTable("GoiTap");
+modelBuilder.Entity<DangKyGoiTap>().ToTable("DangKyGoiTap");
+modelBuilder.Entity<ThanhToan>().ToTable("ThanhToan");
+modelBuilder.Entity<HoaDon>().ToTable("HoaDon");
+modelBuilder.Entity<ThietBi>().ToTable("ThietBi");
+modelBuilder.Entity<LichTapThanhVien>().ToTable("LichTap");
 
             // UNIQUE USERNAME
             modelBuilder.Entity<NguoiDung>()
