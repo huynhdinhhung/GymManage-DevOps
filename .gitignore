@@ -364,3 +364,4 @@ FodyWeavers.xsd.env
 .env
 DB.k8s.sql
 *.bak
+*.bak
